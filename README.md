@@ -1,12 +1,21 @@
-# GitHub Profile Analyzer API
+# GitHub Profile Analyzer
 
-A backend service that analyzes GitHub user profiles using the [GitHub REST API](https://docs.github.com/en/rest) and stores useful insights in a MySQL database.
+A fullstack application that analyzes GitHub user profiles using the [GitHub REST API](https://docs.github.com/en/rest), stores useful insights in a MySQL database, and visualizes the results on a beautiful dark-themed dashboard.
+
+## Project Structure
+
+The codebase is divided into two separate directories:
+- **`backend/`**: Node.js + Express.js service that connects to MySQL and integrates with the GitHub API.
+- **`frontend/`**: Responsive client-side web application (`index.html`) using vanilla HTML, CSS, and JS.
+
+---
 
 ## Tech Stack
 
-- **Runtime:** Node.js
-- **Framework:** Express.js
+- **Backend Runtime:** Node.js
+- **API Framework:** Express.js
 - **Database:** MySQL
+- **Frontend:** HTML5, CSS3 (GitHub Dark Mode design), and vanilla JS
 - **Third-Party API:** GitHub REST API v3
 
 ## Features
@@ -16,15 +25,10 @@ A backend service that analyzes GitHub user profiles using the [GitHub REST API]
 - 🔄 Automatic upsert — re-analyzing a user updates existing data (no duplicates)
 - 📋 List all analyzed profiles
 - 👤 Fetch a single analyzed profile
-- ❤️ Health check endpoint for deployment monitoring
+- ❤️ Health check endpoint for database and server status monitoring
 - ✅ Input validation (GitHub username format rules)
-- ⚠️ Rate limit handling with `retry_after` response
-
-## Live Deployed API URL
-
-> **Replace this with your actual Railway URL after deployment.**
->
-> `https://your-app-name.up.railway.app`
+- ⚠️ Rate limit handling with clear instructions and retry timers
+- ⚡ Client-side caching to fast-load profiles without redundant API requests
 
 ---
 
@@ -33,6 +37,8 @@ A backend service that analyzes GitHub user profiles using the [GitHub REST API]
 - [Node.js](https://nodejs.org/) v16+ and npm
 - [MySQL](https://dev.mysql.com/downloads/) 8.0+
 - (Optional) A [GitHub Personal Access Token](https://github.com/settings/tokens) — increases API rate limit from 60 to 5,000 requests/hour
+
+---
 
 ## Setup Instructions
 
@@ -43,48 +49,60 @@ git clone https://github.com/YOUR_USERNAME/github-profile-analyzer.git
 cd github-profile-analyzer
 ```
 
-### 2. Install Dependencies
+### 2. Set Up the Backend
 
-```bash
-npm install
-```
+1. **Navigate to the backend folder & install dependencies:**
+   ```bash
+   cd backend
+   npm install
+   ```
 
-### 3. Set Up the Database
+2. **Configure Environment Variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and fill in your MySQL credentials:
+   ```env
+   PORT=3000
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=your_password
+   DB_NAME=github_analyzer
+   GITHUB_TOKEN=               # optional
+   ```
 
-```bash
-mysql -u root -p < schema.sql
-```
+3. **Initialize the Database:**
+   ```bash
+   mysql -u root -p < schema.sql
+   ```
 
-### 4. Configure Environment Variables
+4. **Start the Backend Server:**
+   - **Development (auto-restart on change):**
+     ```bash
+     npm run dev
+     ```
+   - **Production:**
+     ```bash
+     npm start
+     ```
+   The server will run at `http://localhost:3000`.
 
-```bash
-cp .env.example .env
-```
+---
 
-Edit `.env` with your MySQL credentials:
+### 3. Set Up the Frontend
 
-```env
-PORT=3000
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=github_analyzer
-GITHUB_TOKEN=               # optional
-```
+1. Navigate to the `frontend` folder:
+   ```bash
+   cd ../frontend
+   ```
+2. Double-click `index.html` to open it in your browser, or serve it using any simple local server (e.g. `npx serve .` or Live Server extension).
 
-### 5. Start the Server
-
-**Development (auto-restart on changes):**
-```bash
-npm run dev
-```
-
-**Production:**
-```bash
-npm start
-```
-
-Server runs at `http://localhost:3000`
+> [!IMPORTANT]
+> **Deployment Reminder — BASE_URL swap:**
+> Before deploying your frontend to a hosting provider or production, open `frontend/index.html` and update the `BASE_URL` constant (found at the top of the `<script>` tag) to point to your live deployed backend API URL (e.g. your Railway URL).
+> ```javascript
+> const BASE_URL = 'https://your-app-name.up.railway.app';
+> ```
 
 ---
 
@@ -98,7 +116,7 @@ Server runs at `http://localhost:3000`
 | GET    | `/api/profiles`             | Get all stored analyzed profiles         |
 | GET    | `/api/profiles/:username`   | Get a single stored profile by username  |
 
-### Usage Examples
+### Usage Examples (Backend)
 
 **Analyze a profile:**
 ```bash
@@ -110,63 +128,20 @@ curl -X POST http://localhost:3000/api/profiles/torvalds
 curl http://localhost:3000/api/profiles
 ```
 
-**Get a single profile:**
-```bash
-curl http://localhost:3000/api/profiles/torvalds
-```
-
 **Health check:**
 ```bash
 curl http://localhost:3000/health
 ```
 
-### Sample Response — Analyze Profile
-
-```json
-{
-  "success": true,
-  "message": "Profile analyzed and saved successfully",
-  "data": {
-    "id": 1,
-    "username": "torvalds",
-    "name": "Linus Torvalds",
-    "bio": null,
-    "avatar_url": "https://avatars.githubusercontent.com/u/1024025?v=4",
-    "html_url": "https://github.com/torvalds",
-    "location": "Portland, OR",
-    "company": "Linux Foundation",
-    "blog": "",
-    "twitter_username": null,
-    "public_repos": 7,
-    "public_gists": 0,
-    "followers": 220000,
-    "following": 0,
-    "account_created_at": "2011-09-03T...",
-    "last_updated_on_github": "2024-...",
-    "analyzed_at": "2026-06-16T...",
-    "updated_at": "2026-06-16T..."
-  }
-}
-```
-
-### Error Responses
-
-| Status | Scenario                          |
-|--------|-----------------------------------|
-| 400    | Invalid username format           |
-| 404    | GitHub user not found / Profile not analyzed yet |
-| 429    | GitHub API rate limit exceeded    |
-| 500    | Internal server error             |
-
 ---
 
 ## Database Schema
 
-The database has a single `github_profiles` table. See [schema.sql](schema.sql) for the full CREATE TABLE statement.
+The database has a single `github_profiles` table. See `backend/schema.sql` for the full CREATE TABLE statement.
 
 **To export the running database schema:**
 ```bash
-mysqldump -u root -p github_analyzer > schema.sql
+mysqldump -u root -p github_analyzer > backend/schema.sql
 ```
 
 ---
@@ -178,83 +153,58 @@ mysqldump -u root -p github_analyzer > schema.sql
 ### Steps
 
 1. **Push code to GitHub** — create a repo and push this project.
-
 2. **Create a Railway project:**
    - Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub Repo
    - Select your repository
-
 3. **Add a MySQL database:**
    - In your Railway project → "New" → "Database" → "MySQL"
-   - Railway auto-provisions the database and provides connection variables
-
 4. **Set environment variables:**
    - Go to your service → Settings → Variables
    - Add:
      ```
-     DB_HOST      → from Railway's MySQL plugin (MYSQLHOST)
-     DB_USER      → from Railway's MySQL plugin (MYSQLUSER)
-     DB_PASSWORD   → from Railway's MySQL plugin (MYSQLPASSWORD)
-     DB_NAME      → from Railway's MySQL plugin (MYSQLDATABASE)
-     PORT         → Railway sets this automatically
+     DB_HOST      → MYSQLHOST
+     DB_USER      → MYSQLUSER
+     DB_PASSWORD   → MYSQLPASSWORD
+     DB_NAME      → MYSQLDATABASE
+     PORT         → 3000
      GITHUB_TOKEN → (optional) your GitHub PAT
      ```
-
 5. **Initialize the database:**
-   - Connect to Railway's MySQL using the provided credentials
-   - Run the `schema.sql` file to create the table
-
+   - Connect to Railway's MySQL and run the `schema.sql` file to create the table.
 6. **Deploy:**
-   - Railway auto-detects Node.js and runs `npm start`
-   - Your API is live at the Railway-provided URL
-
+   - Set the root directory of your app service to `/backend` in Railway service settings so it runs the backend.
+   - Your backend will go live at the Railway-provided public domain.
 7. **Set up health check:**
-   - In service settings → Health Check Path → `/health`
-
-## Frontend Web Application
-
-The project includes a responsive, premium single-page web interface (`index.html`) inspired by GitHub's dark theme design.
-
-### Features:
-- **Analyze Input:** Enter a GitHub username to trigger a profile fetch and store it.
-- **Active Profile Card:** Beautiful visualization showing statistics, avatar, bio, metadata links (Blog, Location, Twitter, Company) and account age.
-- **Analyzed Profiles History:** Displays a grid/list of all previously stored profiles. Clicking a profile loads it instantly using fast local cache retrieval.
-- **Dynamic Filtering:** Instant client-side history filter.
-- **Health Check Indicator:** Displays the connection status of the backend API.
-
-### How to Run:
-Since it's a static file, you can double-click `index.html` to open it in your browser, or serve it using any simple local server (e.g. `npx serve .` or VS Code Live Server).
-
-> [!IMPORTANT]
-> **Deployment Reminder — BASE_URL swap:**
-> Before deploying your frontend to a hosting provider or production, open `index.html` and update the `BASE_URL` constant (found at the top of the `<script>` tag) to point to your live deployed backend API URL (e.g. your Railway URL).
-> ```javascript
-> const BASE_URL = 'https://your-app-name.up.railway.app';
-> ```
+   - In service settings → Health Check Path → `/health`.
 
 ---
 
-## Project Structure
+## Project Directory Tree
 
 ```
-├── src/
-│   ├── index.js                # App entry point
-│   ├── config/
-│   │   └── db.js               # MySQL connection pool
-│   ├── routes/
-│   │   └── profileRoutes.js    # Route definitions
-│   ├── controllers/
-│   │   └── profileController.js # Business logic
-│   ├── services/
-│   │   └── githubService.js    # GitHub API integration
-│   └── utils/
-│       └── errorHandler.js     # Global error middleware
-├── schema.sql                  # Database schema
-├── index.html                  # Frontend web app UI
-├── postman_collection.json     # Postman collection
-├── .env.example                # Environment template
-├── .gitignore
-├── package.json
-└── README.md
+github-profile-analyzer/
+├── backend/
+│   ├── src/
+│   │   ├── index.js                # App entry point
+│   │   ├── config/
+│   │   │   └── db.js               # MySQL connection pool
+│   │   ├── routes/
+│   │   │   └── profileRoutes.js    # Route definitions
+│   │   ├── controllers/
+│   │   │   └── profileController.js # Business logic
+│   │   ├── services/
+│   │   │   └── githubService.js    # GitHub API integration
+│   │   └── utils/
+│   │       └── errorHandler.js     # Global error middleware
+│   ├── schema.sql                  # Database schema
+│   ├── postman_collection.json     # Postman collection
+│   ├── .env.example                # Environment template
+│   ├── package.json
+│   └── package-lock.json
+├── frontend/
+│   └── index.html                  # Frontend web app UI
+├── .gitignore                      # Git ignore file
+└── README.md                       # Documentation
 ```
 
 ---
@@ -262,4 +212,3 @@ Since it's a static file, you can double-click `index.html` to open it in your b
 ## License
 
 ISC
-
