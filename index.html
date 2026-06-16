@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Profile Analyzer</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --text-color: #c9d1d9;
+      --text-heading: #f0f6fc;
+      --text-muted: #8b949e;
+      --primary-color: #238636;
+      --primary-hover: #2ea043;
+      --error-color: #f85149;
+      --warning-color: #d29922;
+      --success-color: #56d364;
+      --accent-glow: rgba(35, 134, 54, 0.15);
+      --card-hover-bg: #21262d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.5;
+      padding: 2rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand svg {
+      fill: var(--text-heading);
+      width: 32px;
+      height: 32px;
+    }
+
+    .brand h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-heading);
+      letter-spacing: -0.5px;
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      background-color: var(--card-bg);
+      padding: 0.5rem 0.75rem;
+      border-radius: 2rem;
+      border: 1px solid var(--card-border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--warning-color);
+      display: inline-block;
+      box-shadow: 0 0 8px var(--warning-color);
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+
+    .status-dot.online {
+      background-color: var(--success-color);
+      box-shadow: 0 0 8px var(--success-color);
+    }
+
+    .status-dot.offline {
+      background-color: var(--error-color);
+      box-shadow: 0 0 8px var(--error-color);
+    }
+
+    main {
+      width: 100%;
+      max-width: 1200px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 992px) {
+      main {
+        grid-template-columns: 450px 1fr;
+      }
+    }
+
+    /* Left panel style */
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .card-header-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-heading);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Form Styles */
+    .search-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .search-input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input-group svg {
+      position: absolute;
+      left: 1rem;
+      width: 18px;
+      height: 18px;
+      fill: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: var(--bg-color);
+      border: 1px solid var(--card-border);
+      color: var(--text-heading);
+      padding: 0.8rem 1rem 0.8rem 2.8rem;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: #58a6ff;
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+    }
+
+    .btn {
+      background-color: var(--primary-color);
+      color: var(--text-heading);
+      border: 1px solid rgba(240, 246, 252, 0.1);
+      border-radius: 6px;
+      padding: 0.8rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background-color 0.2s, transform 0.1s, opacity 0.2s;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Active Profile Card */
+    .profile-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-card-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    }
+
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid var(--card-border);
+      object-fit: cover;
+      background-color: var(--bg-color);
+    }
+
+    .profile-titles h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      letter-spacing: -0.5px;
+    }
+
+    .profile-titles .username {
+      font-size: 1rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      transition: color 0.2s;
+    }
+
+    .profile-titles .username:hover {
+      color: #58a6ff;
+    }
+
+    .profile-bio {
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-color);
+      white-space: pre-line;
+    }
+
+    .profile-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-count {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-heading);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .profile-details-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--text-color);
+    }
+
+    .detail-row svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .detail-row a {
+      color: #58a6ff;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .detail-row a:hover {
+      text-decoration: underline;
+    }
+
+    .detail-meta-footer {
+      border-top: 1px solid var(--card-border);
+      padding-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    /* History Grid Area */
+    .history-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: fit-content;
+    }
+
+    .history-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 600px) {
+      .history-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    .history-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-heading);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .history-filter-input {
+      background-color: var(--bg-color);
+      border: 1px solid var(--card-border);
+      color: var(--text-heading);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      outline: none;
+      width: 100%;
+      max-width: 250px;
+      transition: border-color 0.2s;
+    }
+
+    .history-filter-input:focus {
+      border-color: #58a6ff;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    @media (min-width: 600px) {
+      .history-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .history-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .history-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+    }
+
+    .history-card:hover {
+      transform: translateY(-2px);
+      border-color: #58a6ff;
+      background-color: var(--card-hover-bg);
+      box-shadow: 0 4px 12px rgba(88, 166, 255, 0.05);
+    }
+
+    .history-card.active-selected {
+      border-color: var(--primary-color);
+      background-color: var(--accent-glow);
+    }
+
+    .history-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--card-border);
+      object-fit: cover;
+    }
+
+    .history-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .history-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-heading);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-username {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-stat-pill {
+      font-size: 0.7rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 1rem;
+      background-color: var(--bg-color);
+      border: 1px solid var(--card-border);
+      margin-top: 0.25rem;
+      align-self: flex-start;
+      color: var(--text-muted);
+    }
+
+    /* States (Loader & Empty State) */
+    .loader {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(240, 246, 252, 0.2);
+      border-top-color: var(--text-heading);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .overlay-loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 0;
+      gap: 1rem;
+      color: var(--text-muted);
+    }
+
+    .overlay-loader .loader {
+      width: 40px;
+      height: 40px;
+      border-width: 4px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--text-muted);
+      border: 2px dashed var(--card-border);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .empty-state svg {
+      width: 40px;
+      height: 40px;
+      fill: var(--card-border);
+    }
+
+    .empty-state-title {
+      font-weight: 600;
+      color: var(--text-heading);
+    }
+
+    /* Alerts and Toasts */
+    .alert {
+      background-color: rgba(248, 81, 73, 0.15);
+      border: 1px solid var(--error-color);
+      color: #ff7b72;
+      padding: 0.8rem 1rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .alert svg {
+      fill: #ff7b72;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .alert-content {
+      flex-grow: 1;
+    }
+
+    .alert-retry-counter {
+      font-weight: bold;
+      color: var(--warning-color);
+      margin-top: 0.25rem;
+    }
+
+    /* Toast container */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .toast {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--success-color);
+      color: var(--text-heading);
+      padding: 1rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 300px;
+      max-width: 450px;
+      transform: translateX(120%);
+      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      font-size: 0.9rem;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast.error {
+      border-left-color: var(--error-color);
+    }
+
+    .toast svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+        <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+      </svg>
+      <h1>GitHub Profile Analyzer</h1>
+    </div>
+    
+    <div class="connection-status">
+      <span id="connection-status-dot" class="status-dot"></span>
+      <span id="connection-status-text">Checking Connection...</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Search & Active Profile -->
+    <section class="left-panel">
+      <!-- Search Form -->
+      <div class="card">
+        <h2 class="card-header-title">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M11.5 7a4.499 4.499 0 11-8.998 0A4.499 4.499 0 0111.5 7zm-.82 4.74a6 6 0 111.06-1.06l3.04 3.04a.75.75 0 11-1.06 1.06l-3.04-3.04z"></path>
+          </svg>
+          Analyze Profile
+        </h2>
+        <form id="search-form" class="search-form">
+          <div class="search-input-group">
+            <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10.5 5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM0 8c0-3.42 2.1-6.35 5.09-7.53a.75.75 0 01.54 1.4A6.5 6.5 0 001.5 8c0 3.02 2.06 5.56 4.88 6.34a.75.75 0 11-.4 1.44A8 8 0 010 8zm10.37 6.13a.75.75 0 011.06 0A7.96 7.96 0 0016 8c0-3.42-2.1-6.35-5.09-7.53a.75.75 0 00-.54 1.4A6.5 6.5 0 0114.5 8c0 3.02-2.06 5.56-4.88 6.34a.75.75 0 00.75.79z"></path>
+            </svg>
+            <input 
+              type="text" 
+              id="username-input" 
+              class="search-input" 
+              placeholder="Enter GitHub username (e.g. torvalds)"
+              required
+              autocomplete="off"
+            >
+          </div>
+          <button type="submit" id="submit-btn" class="btn">
+            <span>Analyze Profile</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Active Profile Card Display -->
+      <div id="active-profile-card-container">
+        <!-- Rendered dynamically -->
+        <div class="empty-state">
+          <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a.75.75 0 01-1.06 1.06l-4.816-4.816A6 6 0 012 8z"></path>
+          </svg>
+          <div class="empty-state-title">No Active Profile Selected</div>
+          <div>Search a username above to analyze or select a previously analyzed profile from the list.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Stored Profile List Grid -->
+    <section class="history-container">
+      <div class="history-header">
+        <h2 class="history-title">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8z"></path>
+            <path d="M2 13.5a1 1 0 011-1h9v2H3a1 1 0 01-1-1z"></path>
+          </svg>
+          Analyzed Profiles
+        </h2>
+        
+        <input 
+          type="text" 
+          id="history-filter" 
+          class="history-filter-input" 
+          placeholder="Filter profiles..."
+          style="display: none;"
+        >
+      </div>
+
+      <div id="history-grid-container">
+        <!-- Loader or empty state rendered dynamically -->
+        <div class="overlay-loader">
+          <div class="loader"></div>
+          <div>Loading profiles...</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Toast system -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script>
+    // ─── Configuration ──────────────────────────────────────────
+    const BASE_URL = 'http://localhost:3000';
+
+    // ─── Global State Cache ─────────────────────────────────────
+    let storedProfilesCache = [];
+    let currentSelectedUsername = null;
+    let rateLimitTimer = null;
+
+    // ─── Elements ───────────────────────────────────────────────
+    const searchForm = document.getElementById('search-form');
+    const usernameInput = document.getElementById('username-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const activeProfileContainer = document.getElementById('active-profile-card-container');
+    const historyGridContainer = document.getElementById('history-grid-container');
+    const historyFilter = document.getElementById('history-filter');
+    const connectionStatusDot = document.getElementById('connection-status-dot');
+    const connectionStatusText = document.getElementById('connection-status-text');
+
+    // ─── Event Listeners ────────────────────────────────────────
+    searchForm.addEventListener('submit', handleAnalyzeSubmit);
+    historyFilter.addEventListener('input', handleHistoryFilter);
+
+    // ─── Initialization ─────────────────────────────────────────
+    initApp();
+
+    async function initApp() {
+      await checkBackendHealth();
+      await loadStoredProfiles();
+      // Periodically check health status every 30 seconds
+      setInterval(checkBackendHealth, 30000);
+    }
+
+    // ─── Health check ───────────────────────────────────────────
+    async function checkBackendHealth() {
+      try {
+        const res = await fetch(`${BASE_URL}/health`);
+        const data = await res.json();
+        
+        if (data.status === 'ok') {
+          connectionStatusDot.className = 'status-dot online';
+          connectionStatusText.textContent = 'Backend Online';
+        } else {
+          throw new Error('Database disconnected');
+        }
+      } catch (err) {
+        connectionStatusDot.className = 'status-dot offline';
+        connectionStatusText.textContent = 'Backend Offline';
+      }
+    }
+
+    // ─── Load Stored Profiles ───────────────────────────────────
+    async function loadStoredProfiles() {
+      try {
+        const res = await fetch(`${BASE_URL}/api/profiles`);
+        const payload = await res.json();
+
+        if (payload.success && Array.isArray(payload.data)) {
+          storedProfilesCache = payload.data;
+          renderHistoryGrid();
+        } else {
+          renderHistoryEmptyState();
+        }
+      } catch (err) {
+        console.error('Error fetching profiles list:', err);
+        renderHistoryErrorState();
+      }
+    }
+
+    // ─── Render History Grid ────────────────────────────────────
+    function renderHistoryGrid() {
+      const query = historyFilter.value.trim().toLowerCase();
+      
+      const filtered = storedProfilesCache.filter(profile => {
+        const username = (profile.username || '').toLowerCase();
+        const name = (profile.name || '').toLowerCase();
+        const bio = (profile.bio || '').toLowerCase();
+        return username.includes(query) || name.includes(query) || bio.includes(query);
+      });
+
+      if (storedProfilesCache.length === 0) {
+        historyFilter.style.display = 'none';
+        renderHistoryEmptyState();
+        return;
+      }
+
+      historyFilter.style.display = 'block';
+
+      if (filtered.length === 0) {
+        historyGridContainer.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+              <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a.75.75 0 01-1.06 1.06l-4.816-4.816A6 6 0 012 8z"></path>
+            </svg>
+            <div class="empty-state-title">No matching profiles</div>
+            <div>Try another keyword or search a new profile.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const gridHtml = filtered.map(profile => {
+        const isSelected = profile.username === currentSelectedUsername ? 'active-selected' : '';
+        const nameDisplay = profile.name || profile.username;
+        const subText = profile.name ? `@${profile.username}` : 'GitHub User';
+        
+        return `
+          <div class="history-card ${isSelected}" onclick="selectProfile('${profile.username}')">
+            <img class="history-avatar" src="${profile.avatar_url}" alt="${profile.username} Avatar" onerror="this.src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'">
+            <div class="history-info">
+              <div class="history-name">${escapeHTML(nameDisplay)}</div>
+              <div class="history-username">${escapeHTML(subText)}</div>
+              <div class="history-stat-pill">${profile.public_repos} repos • ${profile.followers} followers</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      historyGridContainer.innerHTML = `<div class="history-grid">${gridHtml}</div>`;
+    }
+
+    // ─── History States ─────────────────────────────────────────
+    function renderHistoryEmptyState() {
+      historyGridContainer.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8 2a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5A.75.75 0 018 2zM8 11a1 1 0 100-2 1 1 0 000 2z"></path>
+          </svg>
+          <div class="empty-state-title">No Profiles Analyzed Yet</div>
+          <div>All developer profiles that get analyzed will be saved here in the history list.</div>
+        </div>
+      `;
+    }
+
+    function renderHistoryErrorState() {
+      historyGridContainer.innerHTML = `
+        <div class="empty-state" style="border-color: var(--error-color);">
+          <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true" style="fill: var(--error-color);">
+            <path fill-rule="evenodd" d="M8 16A8 8 0 108 0a8 8 0 000 16zM7 5a1 1 0 112 0v5a1 1 0 11-2 0V5zm1 9a1 1 0 100-2 1 1 0 000 2z"></path>
+          </svg>
+          <div class="empty-state-title" style="color: #ff7b72;">Failed to Load History</div>
+          <div>Ensure your backend is running at ${BASE_URL} and the database is configured.</div>
+        </div>
+      `;
+    }
+
+    // ─── Filter Stored Profiles ─────────────────────────────────
+    function handleHistoryFilter() {
+      renderHistoryGrid();
+    }
+
+    // ─── Select Profile (Uses Client Cache) ─────────────────────
+    function selectProfile(username) {
+      currentSelectedUsername = username;
+      
+      // Instantly render card using the cached object
+      const profile = storedProfilesCache.find(p => p.username === username);
+      if (profile) {
+        renderActiveProfileCard(profile);
+        // Refresh active highlight styling in history grid
+        renderHistoryGrid();
+      } else {
+        console.error(`Profile data for ${username} not found in client cache.`);
+      }
+    }
+
+    // ─── Analyze User Form Submit ──────────────────────────────
+    async function handleAnalyzeSubmit(e) {
+      e.preventDefault();
+      const rawUsername = usernameInput.value.trim();
+      if (!rawUsername) return;
+
+      // Disable inputs and show loading
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="loader"></span> <span>Analyzing...</span>`;
+      
+      // Remove any existing countdown rate limits timers
+      if (rateLimitTimer) {
+        clearInterval(rateLimitTimer);
+        rateLimitTimer = null;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/api/profiles/${encodeURIComponent(rawUsername)}`, {
+          method: 'POST'
+        });
+        const payload = await res.json();
+
+        if (res.ok && payload.success) {
+          // Success toast
+          showToast(`Successfully analyzed ${payload.data.name || payload.data.username}`);
+          
+          // Add or replace profile in local cache
+          const existingIdx = storedProfilesCache.findIndex(p => p.username.toLowerCase() === payload.data.username.toLowerCase());
+          if (existingIdx !== -1) {
+            storedProfilesCache[existingIdx] = payload.data;
+          } else {
+            storedProfilesCache.unshift(payload.data);
+          }
+
+          currentSelectedUsername = payload.data.username;
+          renderActiveProfileCard(payload.data);
+          renderHistoryGrid();
+          usernameInput.value = '';
+        } else {
+          // Check for rate limit retry-after header or body responses
+          if (res.status === 429) {
+            handleRateLimit(payload.retry_after_seconds || 60);
+          } else {
+            showActiveProfileError(payload.error || 'Failed to analyze user profile.');
+          }
+        }
+      } catch (err) {
+        console.error('Error analyzing profile:', err);
+        showActiveProfileError('Unable to connect to the backend server. Please verify it is running.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Analyze Profile';
+      }
+    }
+
+    // ─── Handle GitHub Rate Limiting ────────────────────────────
+    function handleRateLimit(secondsRemaining) {
+      let timeLeft = secondsRemaining;
+      
+      showActiveProfileError(
+        `GitHub API Rate limit exceeded. Please wait before analyzing new users.`,
+        timeLeft
+      );
+
+      rateLimitTimer = setInterval(() => {
+        timeLeft--;
+        const timerSpan = document.getElementById('rate-limit-seconds');
+        if (timerSpan) {
+          timerSpan.textContent = timeLeft;
+        }
+
+        if (timeLeft <= 0) {
+          clearInterval(rateLimitTimer);
+          rateLimitTimer = null;
+          // Clear error box and show active state or selection guidelines
+          activeProfileContainer.innerHTML = `
+            <div class="empty-state">
+              <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a.75.75 0 01-1.06 1.06l-4.816-4.816A6 6 0 012 8z"></path>
+              </svg>
+              <div class="empty-state-title">Rate Limit Reset</div>
+              <div>The rate limit cooldown has expired. You can try analyzing profiles again.</div>
+            </div>
+          `;
+        }
+      }, 1000);
+    }
+
+    // ─── Render Active Profile Details ──────────────────────────
+    function renderActiveProfileCard(profile) {
+      const nameDisplay = profile.name || profile.username;
+      const formattedDate = new Date(profile.account_created_at).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      const formattedAnalysis = new Date(profile.analyzed_at).toLocaleString();
+
+      activeProfileContainer.innerHTML = `
+        <div class="card profile-card">
+          <div class="profile-card-glow"></div>
+          
+          <div class="profile-card-header">
+            <img class="profile-avatar" src="${profile.avatar_url}" alt="${profile.username} avatar" onerror="this.src='https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png'">
+            <div class="profile-titles">
+              <h2>${escapeHTML(nameDisplay)}</h2>
+              <a href="${profile.html_url}" target="_blank" class="username">
+                @${escapeHTML(profile.username)}
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10.604 1.004a.75.75 0 01.448.16l2.5 2a.75.75 0 010 1.17l-2.5 2a.75.75 0 01-1.004-1.114l1.248-.998H6.5A3.5 3.5 0 003 7.72V11a.75.75 0 01-1.5 0V7.72A5 5 0 016.5 2.722h4.296l-1.248-.998a.75.75 0 01.056-1.12zM14.5 13a.75.75 0 011 0v1.5a.75.75 0 01-.75.75H2.25A2.25 2.25 0 010 13V9.25a.75.75 0 011.5 0V13a.75.75 0 00.75.75h12.5a.75.75 0 01.25-.75z"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="profile-bio">${profile.bio ? escapeHTML(profile.bio) : '<span style="color: var(--text-muted); font-style: italic;">No bio description provided.</span>'}</div>
+
+          <div class="profile-stats-grid">
+            <div class="stat-item">
+              <span class="stat-count">${profile.public_repos}</span>
+              <span class="stat-label">Repos</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-count">${profile.public_gists}</span>
+              <span class="stat-label">Gists</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-count">${profile.followers}</span>
+              <span class="stat-label">Followers</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-count">${profile.following}</span>
+              <span class="stat-label">Following</span>
+            </div>
+          </div>
+
+          <div class="profile-details-list">
+            ${profile.company ? `
+              <div class="detail-row">
+                <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M1.5 14.25c0 .138.112.25.25.25H4v-3.5c0-.276.224-.5.5-.5h7c.276 0 .5.224.5.5v3.5h2.25a.25.25 0 00.25-.25V6.23a.25.25 0 00-.094-.195L8.281 1.28a.25.25 0 00-.312 0L1.594 6.035a.25.25 0 00-.094.196v8.02zM15 15.75H1A1 1 0 010 14.75V6.035a1.75 1.75 0 01.656-1.367L6.78.337a1.75 1.75 0 012.19 0l6.122 4.331c.42.298.658.784.658 1.303v8.78a1 1 0 01-1 1zM5.5 14.5v-3h5v3h-5z"></path></svg>
+                <span>${escapeHTML(profile.company)}</span>
+              </div>
+            ` : ''}
+            
+            ${profile.location ? `
+              <div class="detail-row">
+                <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M11.536 3.464a5 5 0 00-7.072 0L3.879 4.05a.25.25 0 000 .354l6.98 6.98a.25.25 0 00.354 0l.586-.586a5 5 0 000-7.072zM3.122 2.707a6.5 6.5 0 019.192 9.192l-4.146 4.147a.75.75 0 01-1.06 0L2.96 11.9a6.5 6.5 0 01.162-9.193zM8 8a1 1 0 100-2 1 1 0 000 2z"></path></svg>
+                <span>${escapeHTML(profile.location)}</span>
+              </div>
+            ` : ''}
+
+            ${profile.blog ? `
+              <div class="detail-row">
+                <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a3.5 3.5 0 114.95 4.95l-2.5 2.5a3.5 3.5 0 01-4.95 0 .75.75 0 00-1.06 1.06 5 5 0 007.07 0l2.5-2.5a5 5 0 00-7.07-7.07l-1.25 1.25zm-4.2 4.2a.75.75 0 00-1.06-1.06l-2.5 2.5a5 5 0 007.07 7.07l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a3.5 3.5 0 11-4.95-4.95l2.5-2.5a3.5 3.5 0 014.95 0 .75.75 0 001.06-1.06 5 5 0 00-7.07 0l-2.5 2.5z"></path></svg>
+                <a href="${profile.blog.startsWith('http') ? profile.blog : 'https://' + profile.blog}" target="_blank" rel="noopener noreferrer">${escapeHTML(profile.blog)}</a>
+              </div>
+            ` : ''}
+
+            ${profile.twitter_username ? `
+              <div class="detail-row">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+                <a href="https://twitter.com/${profile.twitter_username}" target="_blank" rel="noopener noreferrer">@${escapeHTML(profile.twitter_username)}</a>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="detail-meta-footer">
+            <div>Member since ${formattedDate}</div>
+            <div>Analyzed ${formattedAnalysis}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ─── Show Active Profile Error Card ──────────────────────────
+    function showActiveProfileError(msg, countdownSeconds = null) {
+      activeProfileContainer.innerHTML = `
+        <div class="alert">
+          <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8 16A8 8 0 108 0a8 8 0 000 16zM7 5a1 1 0 112 0v5a1 1 0 11-2 0V5zm1 9a1 1 0 100-2 1 1 0 000 2z"></path>
+          </svg>
+          <div class="alert-content">
+            <strong>Error:</strong> ${escapeHTML(msg)}
+            ${countdownSeconds !== null ? `
+              <div class="alert-retry-counter">
+                Retrying in <span id="rate-limit-seconds">${countdownSeconds}</span>s...
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    // ─── Toast System ───────────────────────────────────────────
+    function showToast(message, isError = false) {
+      const toast = document.createElement('div');
+      toast.className = `toast ${isError ? 'error' : ''}`;
+      
+      const icon = isError ? 
+        `<svg viewBox="0 0 16 16" fill="#f85149" width="20" height="20"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zM7 5a1 1 0 112 0v5a1 1 0 11-2 0V5zm1 9a1 1 0 100-2 1 1 0 000 2z"></path></svg>` : 
+        `<svg viewBox="0 0 16 16" fill="#56d364" width="20" height="20"><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm3.78-9.72a.75.75 0 00-1.06-1.06L6.72 9.22 5.28 7.78a.75.75 0 00-1.06 1.06l2 2a.75.75 0 001.06 0l4.5-4.5z"></path></svg>`;
+
+      toast.innerHTML = `
+        ${icon}
+        <span>${escapeHTML(message)}</span>
+      `;
+      
+      const container = document.getElementById('toast-container');
+      container.appendChild(toast);
+      
+      // Animate in
+      setTimeout(() => toast.classList.add('show'), 10);
+      
+      // Remove after 4 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // ─── Utility: HTML Escaper ──────────────────────────────────
+    function escapeHTML(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>

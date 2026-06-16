@@ -210,13 +210,26 @@ mysqldump -u root -p github_analyzer > schema.sql
 7. **Set up health check:**
    - In service settings → Health Check Path → `/health`
 
----
+## Frontend Web Application
 
-## Postman Collection
+The project includes a responsive, premium single-page web interface (`index.html`) inspired by GitHub's dark theme design.
 
-Import [postman_collection.json](postman_collection.json) into Postman for pre-built requests.
+### Features:
+- **Analyze Input:** Enter a GitHub username to trigger a profile fetch and store it.
+- **Active Profile Card:** Beautiful visualization showing statistics, avatar, bio, metadata links (Blog, Location, Twitter, Company) and account age.
+- **Analyzed Profiles History:** Displays a grid/list of all previously stored profiles. Clicking a profile loads it instantly using fast local cache retrieval.
+- **Dynamic Filtering:** Instant client-side history filter.
+- **Health Check Indicator:** Displays the connection status of the backend API.
 
-After importing, update the `baseUrl` variable to your deployed URL.
+### How to Run:
+Since it's a static file, you can double-click `index.html` to open it in your browser, or serve it using any simple local server (e.g. `npx serve .` or VS Code Live Server).
+
+> [!IMPORTANT]
+> **Deployment Reminder — BASE_URL swap:**
+> Before deploying your frontend to a hosting provider or production, open `index.html` and update the `BASE_URL` constant (found at the top of the `<script>` tag) to point to your live deployed backend API URL (e.g. your Railway URL).
+> ```javascript
+> const BASE_URL = 'https://your-app-name.up.railway.app';
+> ```
 
 ---
 
@@ -236,6 +249,7 @@ After importing, update the `baseUrl` variable to your deployed URL.
 │   └── utils/
 │       └── errorHandler.js     # Global error middleware
 ├── schema.sql                  # Database schema
+├── index.html                  # Frontend web app UI
 ├── postman_collection.json     # Postman collection
 ├── .env.example                # Environment template
 ├── .gitignore
@@ -248,3 +262,4 @@ After importing, update the `baseUrl` variable to your deployed URL.
 ## License
 
 ISC
+
