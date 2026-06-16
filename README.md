@@ -31,7 +31,7 @@ A backend service that analyzes GitHub user profiles using the [GitHub REST API]
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) v16+ and npm
-- [MySQL](https://dev.mysql.com/downloads/) 8.0+ (or use Docker)
+- [MySQL](https://dev.mysql.com/downloads/) 8.0+
 - (Optional) A [GitHub Personal Access Token](https://github.com/settings/tokens) — increases API rate limit from 60 to 5,000 requests/hour
 
 ## Setup Instructions
@@ -51,19 +51,9 @@ npm install
 
 ### 3. Set Up the Database
 
-**Option A — Local MySQL:**
-
 ```bash
 mysql -u root -p < schema.sql
 ```
-
-**Option B — Docker (no MySQL install needed):**
-
-```bash
-docker-compose up -d db
-```
-
-This starts a MySQL 8.0 container and auto-runs `schema.sql`.
 
 ### 4. Configure Environment Variables
 
@@ -80,13 +70,6 @@ DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=github_analyzer
 GITHUB_TOKEN=               # optional
-```
-
-If using Docker for MySQL, set:
-```env
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=rootpassword
 ```
 
 ### 5. Start the Server
@@ -188,24 +171,6 @@ mysqldump -u root -p github_analyzer > schema.sql
 
 ---
 
-## Docker
-
-### Run Everything with Docker Compose
-
-```bash
-docker-compose up --build
-```
-
-This starts both the API server (port 3000) and MySQL (port 3306).
-
-### Run Only MySQL (develop locally)
-
-```bash
-docker-compose up -d db
-```
-
----
-
 ## Deployment to Railway
 
 [Railway](https://railway.app) supports Node.js + MySQL in one project with a free tier.
@@ -271,8 +236,6 @@ After importing, update the `baseUrl` variable to your deployed URL.
 │   └── utils/
 │       └── errorHandler.js     # Global error middleware
 ├── schema.sql                  # Database schema
-├── Dockerfile                  # Production Docker image
-├── docker-compose.yml          # Local dev with MySQL
 ├── postman_collection.json     # Postman collection
 ├── .env.example                # Environment template
 ├── .gitignore
