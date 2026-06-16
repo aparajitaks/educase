@@ -1,0 +1,107 @@
+{
+  "info": {
+    "name": "GitHub Profile Analyzer API",
+    "description": "API collection for analyzing GitHub user profiles and storing insights in MySQL.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the API server and database are running."
+      }
+    },
+    {
+      "name": "Root - List Endpoints",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": ["{{baseUrl}}"],
+          "path": [""]
+        },
+        "description": "Returns a list of all available API endpoints."
+      }
+    },
+    {
+      "name": "Analyze GitHub Profile",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profiles/torvalds",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profiles", "torvalds"]
+        },
+        "description": "Fetches a GitHub user's public profile, extracts insights, and stores them in the database. Replace 'torvalds' with any GitHub username."
+      }
+    },
+    {
+      "name": "Get All Analyzed Profiles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profiles",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profiles"]
+        },
+        "description": "Returns all GitHub profiles that have been analyzed and stored."
+      }
+    },
+    {
+      "name": "Get Single Profile",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profiles/torvalds",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profiles", "torvalds"]
+        },
+        "description": "Returns a single stored profile by GitHub username. Replace 'torvalds' with the desired username."
+      }
+    },
+    {
+      "name": "Analyze Profile - Invalid Username",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profiles/--invalid--",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profiles", "--invalid--"]
+        },
+        "description": "Tests input validation — should return 400 Bad Request."
+      }
+    },
+    {
+      "name": "Analyze Profile - Non-existent User",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/profiles/this-user-does-not-exist-12345",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "profiles", "this-user-does-not-exist-12345"]
+        },
+        "description": "Tests 404 handling — should return 404 Not Found."
+      }
+    }
+  ]
+}
